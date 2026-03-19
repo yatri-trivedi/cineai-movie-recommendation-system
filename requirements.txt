@@ -1,4 +1,7 @@
-streamlit
+flask
 pandas
-requests
+scipy
 scikit-learn
+requests
+numpy
+gunicorn
