@@ -41,7 +41,8 @@ df["content"] = (
 )
 tfidf         = TfidfVectorizer(stop_words="english")
 tfidf_matrix  = tfidf.fit_transform(df["content"])
-content_sim   = cosine_similarity(tfidf_matrix, tfidf_matrix)
+content_sim = cosine_similarity(tfidf_matrix, tfidf_matrix).astype('float32')
+gc.collect()
 movie_indices = pd.Series(df.index, index=df["movieId"])
 print("✅ Content-Based ready!")
 
