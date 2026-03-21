@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import pandas as pd
 import numpy as np
+import gc
 from scipy.sparse.linalg import svds
 from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -47,12 +48,12 @@ print("✅ Content-Based ready!")
 # ══════════════════════════════════════
 # ML 2 — COLLABORATIVE FILTERING (SVD)
 # ══════════════════════════════════════
-print("Training SVD model (this takes ~30 sec)...")
+print("Training SVD model (lightweight)...")
 user_movie = ratings_df.pivot_table(
     index="userId", columns="movieId", values="rating"
 ).fillna(0)
 matrix       = csr_matrix(user_movie.values)
-U, sigma, Vt = svds(matrix, k=50)
+U, sigma, Vt = svds(matrix, k=20)  # reduced from 50 to 20
 sigma        = np.diag(sigma)
 predicted    = np.dot(np.dot(U, sigma), Vt)
 preds_df     = pd.DataFrame(
@@ -60,8 +61,10 @@ preds_df     = pd.DataFrame(
     index=user_movie.index,
     columns=user_movie.columns
 )
-print("✅ SVD ready!")
-
+del matrix, U, sigma, Vt  # free memory immediately
+import gc
+gc.collect()
+print("SVD ready!")
 # ══════════════════════════════════════
 # ML 3 — HYBRID RECOMMENDER
 # ══════════════════════════════════════
