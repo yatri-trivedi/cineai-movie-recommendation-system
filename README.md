@@ -3,7 +3,6 @@ A Machine Learning based movie recommendation system web app built using MovieLe
 This project recommends movies using machine learning based on user ratings.
 Tech Stack:
 - Python
-- Streamlit
 - Scikit-learn
 - TMDB API
 Features:
