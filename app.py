@@ -1,4 +1,5 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, send_from_directory jsonify, request
+import os
 import pandas as pd
 import numpy as np
 import gc
@@ -10,7 +11,8 @@ from textblob import TextBlob   # pip install textblob
 import requests as req
 import google.genai as genai
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
+
 
 print("Loading data...")
 movies_df  = pd.read_csv("dataset/movies.csv")
@@ -160,7 +162,7 @@ def to_json(subset):
 @app.route("/")     
 def index():
     moods = [{"key": k, **v} for k, v in MOOD_MAP.items()]
-    return render_template("index.html", genres=ALL_GENRES, moods=moods)
+    return send_from_directory('.', 'index.html')
 @app.route("/api/movies")
 def get_movies():
     query        = request.args.get("q","").strip().lower()
