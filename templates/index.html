@@ -621,6 +621,42 @@ setView(currentView);
   const embed = document.getElementById("trailerEmbed");
   if (embed) { embed.innerHTML = ""; embed.classList.remove("show"); }
 }
+async function playTrailer(tmdbId) {
+  const embed = document.getElementById("trailerEmbed");
+  if (!tmdbId || !embed) return;
+
+  embed.innerHTML = `<p style="color:#aaa;padding:10px">Loading trailer...</p>`;
+  embed.classList.add("show");
+
+  try {
+    // Fetch trailer key from TMDB
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=ca53af58900b285674d07dca69e7bf2e&language=en-US`
+    );
+    const data = await res.json();
+
+    const trailer = data.results?.find(
+      v => v.type === "Trailer" && v.site === "YouTube"
+    ) || data.results?.[0];
+
+    if (!trailer) {
+      embed.innerHTML = `<p style="color:red;padding:10px">No trailer found.</p>`;
+      return;
+    }
+
+    embed.innerHTML = `
+      <iframe
+        width="100%" height="315"
+        src="https://www.youtube.com/embed/${trailer.key}?autoplay=1"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>`;
+  } catch (err) {
+    embed.innerHTML = `<p style="color:red;padding:10px">Failed to load trailer.</p>`;
+    console.error("Trailer error:", err);
+  }
+}
 const TMDB = "ca53af58900b285674d07dca69e7bf2e";
 const cache = {};
 
